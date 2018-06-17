@@ -33,7 +33,7 @@ using NTL::pow;
  */
 struct Stats{
 
-  Stats(bool verb = false, string fn = "-", ZZ updatefreq = ZZ(10007))
+  Stats(string fn = "-", ZZ updatefreq = ZZ(10007))
     : fn(fn), out(std::cout.rdbuf())// 100003
   {
     freq = updatefreq; 
@@ -45,7 +45,6 @@ struct Stats{
     }
 
     out.rdbuf(buf);
-    verbose = verb;
   }
 
   ~Stats(){
@@ -64,7 +63,6 @@ struct Stats{
   ZZ product;
 
   std::ostream out;
-  bool verbose;
 
   vector<ZZ> prev_core;
   vector<ZZ> init_core;
@@ -90,7 +88,7 @@ bool cap_check(vector<ZZ>& primes,
 bool exp_find(vector<ZZ>& primes, 
               vector<vector<ZZ> >& exp_seqs);
 
-void OPAN(int d, bool verbose, bool steps, string fname);
+void OPAN(int d, string fname);
 void printline(int line);
 
 

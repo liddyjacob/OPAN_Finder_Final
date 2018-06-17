@@ -9,17 +9,15 @@
 #include "opanalg.hpp"
 using std::string;
 
-bool parse(int& divisors,bool& verbose, bool& steps, string& fname, int argc, char** argv);
+bool parse(int& divisors, string& fname, int argc, char** argv);
 
 
 int main(int argc, char** argv){
-  int divisors;
-  bool verbose;
-  bool steps;
+  int divisors; 
   string fname;
 
-  if (parse(divisors, verbose, steps, fname, argc, argv)){
-    OPAN(divisors, verbose, steps, fname);
+  if (parse(divisors, fname, argc, argv)){
+    OPAN(divisors,fname);
     return 0;
   }
 
@@ -27,10 +25,8 @@ int main(int argc, char** argv){
 }
 
 bool
-parse(int& divisors,bool& verbose, bool& steps, string& fname, int argc, char** argv){
+parse(int& divisors,bool& verbose, string& fname, int argc, char** argv){
 
-  verbose = false;
-  steps = false;
   divisors = -1;
   fname = '-';
 
@@ -42,8 +38,6 @@ parse(int& divisors,bool& verbose, bool& steps, string& fname, int argc, char** 
     if (strcmp(argv[i], "-help") == 0 ){
       std::cout << "Options:\n\n"
                 << "\t-n <Number of Divisors>: Specify number of divisors\n"
-                << "\t-v : Verbose\n"
-                << "\t-s : Display each step, then wait for user input\n"
                 << "\t-f <filename> : Save all integers found to filename\n";
       return false;
     } else 
@@ -55,12 +49,6 @@ parse(int& divisors,bool& verbose, bool& steps, string& fname, int argc, char** 
       }
       divisors = atoi(argv[i]);
     } else 
-    if (strcmp(argv[i], "-s") == 0){
-      steps = true;
-    } else 
-    if (strcmp(argv[i], "-v") == 0){
-      verbose = true;
-    } else
     if (strcmp(argv[i], "-f") == 0){
       ++i;
       if (i >= argc){

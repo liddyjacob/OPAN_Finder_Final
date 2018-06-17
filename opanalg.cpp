@@ -9,188 +9,62 @@
 #include <primecount.hpp>
 #include <algorithm>
 
-void PressEnterToContinue()
-{
-  int c;
-  printf( "\nPress ENTER to continue... " );
-  fflush( stdout );
-  do c = getchar(); while ((c != '\n') && (c != EOF));
-}
 
-void OPAN2(int d, bool verbose, bool steps, string fname){
+void OPAN(int d, string fname){
 
   std::vector<Tree> record_forest;
-   
-  for (int factors = 3; factors <= d; ++factors){
+  Stats s(fname);
 
+  for (int factors = 3; factors <= d; ++factors){
     
     record_forest.push_back(Tree());
-    Tree& record_tree = forest.back();
+    Tree& record_tree = record_forest.back();
 
-    vector<vector<ZZ> > primes;
+    vector<ZZ> primes;
     bool running = true;
-      if (verbose) {printline(1); printline(2);}
  
     vector<vector<ZZ> > exp_seqs; /* Exponent sequences for the prime sequence
-                                     (The prime sequence is kept track of by the tree) */ 
-
-    
+                                     (The prime sequence is kept track of by the tree) */  
 
     while (running){
-
-      if (verbose) {printline(3);}
-
       if (primes.size() != factors){
-        if (verbose) {printline(4);}
-      
-        if (b_1(p) >= RR(2)){
-          if (verbose) {printline(5);}
-          
+        if (b_1(primes) >= RR(2)){
           primes.pop_back();
           ZZ r = min_deficient(primes); /* find minimum prime so that Y(primes + r, {1,1,1,1...}) is deficient */
           primes.push_back(r);
-
-          if (verbose){printline(8);}
         }
-      
         find_add_s(primes, record_tree);
-          if (verbose) {printline(11);}
         continue;
       }
 
+
       if (b_inf(primes) <= RR(2)){
-        if (verbose){printline(15);}
         fail(primes, record_tree);
         continue;
       }
 
+
       if (exp_find(primes, exp_seqs)){
-        if (verbose){printline(18);}
 
-
-        if (verbose){std::cout << "Applying Efficiency Theorem...\n";}
+        //Applying Efficiency Theorem...
         Write(s, primes, exp_seqs); 
         efficiency(primes, exp_seqs, s);
         Write(s, primes, exp_seqs);
 
-        replace_next(primes, record_tree); /* Result of the efficiency theorem */
+        replace_next(primes, record_tree); 
+        /* ^ Result of the efficiency theorem ^ */
 
         success(primes, record_tree);
         Write(s, primes, exp_seqs);
-
         continue;
-      }
 
-     } else {
-        
-        if (!cap_check(primes, forest, factors)){
-          growing = fail(primes, record_tree, verbose);
-        }
+      } else if (!cap_check(primes, record_forest, factors)){
+          running = fail(primes, record_tree);
       }
     }
-
     Write(s, primes, exp_seqs);
   }
   return;   
-}
-
-
-void OPAN(int d, bool verbose, bool steps, string fname){
-
-  std::vector<Tree> forest;
-  Stats s(verbose, fname);
-
-  for (int factors = 3; factors <= d; ++factors){
-
-    Reset(s);
-
-    /* Create a new tree for current number of factors */
-    forest.push_back(Tree());
-    Tree& tree = forest.back();
-
-    vector<vector<ZZ> > exp_seqs; /* Exponent sequences for the prime sequence
-                                     (The prime sequence is kept track of 
-                                     by the tree) */ 
-
-    if (verbose) {printline(1);}
-
-    bool growing = true; /* Flag that tells when to stop looking for prime sequences */
-    std::vector<ZZ> primes; 
-    if (verbose) { std::cout << "-- Finding all OPAN's with " << factors << " prime divisors-- \n";}
-    
-    while (growing){
-
-      Update(s, tree);
-
-      if (steps){ PressEnterToContinue(); }  
-      if (verbose) {Show(s, tree); printline(3); };
- 
-      if (verbose){
-        if (primes.size() != factors){
-          printline(4);
-          printline(11);
-        }
-
-      }
-      grow(tree, RR(3), verbose); /* Grow the tree by a single prime */
-      primes = strip_primes(tree); /* Get the current prime sequence */
-
-
-      if (primes.size() != factors){ /* Not enough prime factors right now */
-
-        exp_seqs.clear(); /* Thow out old exponent sequence. Theorem that allows us to re-use exponents does not apply anymore! */
-        
-        if (b_1(primes) >= RR(2)){ /* p_1 p_2 p_3 ... p_d is already abundant and there are not enough divisors */
-        
-          if (verbose){ printline(4); }
-
-          primes.pop_back();
-          ZZ r = min_deficient(primes); /* find minimum prime so that Y(primes + r, {1,1,1,1...}) is deficient */
-          replace(tree, r);
-        
-        }
-
-        if (verbose){ printline(12); }
-
-        continue;
-
-      }
-
-      if (b_inf(primes) <= RR(2)){ 
-        /*Deficient no matter what exponents are input */
-        if (verbose){ printline(14); }
-        growing = fail(tree, verbose); /* Checks if there are more prime sequences to find */
-        if (verbose) { printline(16);}
-        continue;
-      }
-
-      if (verbose){ printline(18); }
-
-      if (exp_find(primes, exp_seqs)){
-
-        /* Applies the efficiency theorem */
-        Write(s, primes, exp_seqs); 
-        efficiency(primes, exp_seqs, s);
-        Write(s, primes, exp_seqs);
-
-        replace(tree, primes.back()); /* Result of the efficiency theorem */
-
-        success(tree);
-        Write(s, primes, exp_seqs);
-
-     } else {
-        
-        if (!cap_check(primes, forest, factors)){
-          growing = fail(tree, verbose);
-        }
-      }
-    }
-
-    Write(s, primes, exp_seqs);
-    //expand_sets(leaves, s); /* This line of code is used for paralell proccessing */
-   
-  }
-  return;
 }
 
 bool exp_find(vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs){
@@ -236,7 +110,7 @@ bool cap_check(vector<ZZ>& primes, vector<Tree>& forest, int& factors){
 
   /* Check theorem concering capd(P) */
   if (truncp <= cap) { 
-    grow(forest.back(), conv<RR>(truncp + 1), false);
+    grow(forest.back(), conv<RR>(truncp + 1));
     return true;
   } else {
     /* Theorem tells us that we should modify the primes and cannot look here anymore */
@@ -363,43 +237,3 @@ void Write(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_sets){
   
 }
 
-void printline(int line){
-  
-  vector<string> code{
-    "P := {}",
-    "running := TRUE",
-    "while running do",
-    "if |P | != d then",
-    "if b 1 (P ) ≥ 2 then",
-    "Remove the last element of P",
-    "Let q be the minimum prime s.t. b 1 (P + q) < 2",
-    "P := P + q",
-    "end if",
-    "Let s be the minimum prime such that s > max(P ) and P + s has never been stored in P before.",
-    "P := P + s",
-    "continue",
-    "end if",
-    "if b∞(P) ≤ 2 then",
-    "fail(P, running)",
-    "continue",
-    "end if",
-    "if E P is not empty then",
-    "Store (P, E P )",
-    "r = nextprime(max(P ))",
-    "Replace the last prime in P with r",
-    "continue",
-    "end if",
-    "s = backup(P)",
-    "if |P | = d − 1 then",
-    "fail(P, running)",
-    "continue",
-    "end if",
-    "if s ≤ Cap d (P ) then",
-    "P := P + nextprime(s)",
-    "contiue",
-    "end if",
-    "fail(P, running)",
-    "end while"};
-
-  std::cout << line << ": " << code[line - 1] << '\n'; 
-}

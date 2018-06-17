@@ -52,18 +52,14 @@ struct Tree{
   Node* curr;
 
 };
-
-void failline(int line);
-
-
-void grow(Tree& t, RR bound, bool verbose);
+void grow(Tree& t, RR bound);
 void strip_helper(Node* n, vector<ZZ>& primes);
 
 vector<ZZ> strip_primes(Tree& t);
 
 void replace(Tree& t, ZZ rep);
 
-bool fail(Tree& t, bool verbose);
+bool fail(Tree& t);
 void display(Tree& t);
 ZZ backup(Tree& t);
 void success(Tree& t);

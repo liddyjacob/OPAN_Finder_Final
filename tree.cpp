@@ -19,7 +19,7 @@ using NTL::NextPrime;
 using NTL::conv;
 
 
-void grow(Tree& t, RR bound, bool verbose){
+void grow(Tree& t, RR bound){
 
   std::cout << "In grow\n";
 
@@ -56,12 +56,9 @@ void replace(Tree& t, ZZ rep){
   t.curr->p = rep;
 }
 
-bool fail(Tree& t, bool verbose){
-
-  if (verbose) failline(1);
+bool fail(Tree& t){
 
   while (!t.curr->success){
-    if (verbose) failline(2); 
 
     Node* failed = t.curr;
     t.curr = t.curr->parent;
@@ -69,20 +66,14 @@ bool fail(Tree& t, bool verbose){
     t.curr->children.pop_back();
 
     if (t.curr->p == ZZ(1) && (!t.curr->success))
-      if (verbose) {failline(9); failline(10);}
       return false;
   }
 
   t.curr->tried = true;
 
   while (t.curr->tried){
-
-    if (verbose) failline(13);
     t.curr = t.curr->parent;
-
   }
-
-  if (verbose) failline(16);
   return true;
 }
 
@@ -201,26 +192,3 @@ void set_max(Node* n, ZZ& p){
   curr->max = p;
 }
 
-void failline(int line){
-
-  vector<string> code{
-    "P' := P",
-    "while P' != {} do",
-    "Remove the last prime from P'",
-    "if there exists A P'-initiated OPAN in lex(P ) then",
-    "break",
-    "end if",
-    "T (P') := TRUE",
-    "end while",
-    "if P 0 = {} then",
-    "running := FALSE",
-    "return",
-    "end if",
-    "while T (P' ) do",
-    "Remove the last prime from P'.",
-    "end while",
-    "P := P'",
-    "return"};
-
-  std::cout << "FAIL line " << line << ": " << code[line - 1] << '\n';
-}
