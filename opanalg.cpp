@@ -13,13 +13,14 @@
 void OPAN(int d, string fname){
 
   std::vector<Tree> record_forest;
-  Stats s(fname);
+  Stats stats(fname);
 
   for (int factors = 3; factors <= d; ++factors){
     
     record_forest.push_back(Tree());
     Tree& record_tree = record_forest.back();
 
+    /* This is where the algorithm starts in the paper */
     vector<ZZ> primes;
     bool running = true;
  
@@ -30,8 +31,8 @@ void OPAN(int d, string fname){
       if (primes.size() != factors){
         if (b_1(primes) >= RR(2)){
           primes.pop_back();
-          ZZ r = min_deficient(primes); /* find minimum prime so that Y(primes + r, {1,1,1,1...}) is deficient */
-          primes.push_back(r);
+          ZZ q = min_deficient(primes); /* find minimum prime so that Y(primes + r, {1,1,1,1...}) is deficient */
+          primes.push_back(q);
         }
         find_add_s(primes, record_tree);
         continue;
@@ -47,22 +48,37 @@ void OPAN(int d, string fname){
       if (exp_find(primes, exp_seqs)){
 
         //Applying Efficiency Theorem...
-        Write(s, primes, exp_seqs); 
-        efficiency(primes, exp_seqs, s);
-        Write(s, primes, exp_seqs);
+        Write(stats, primes, exp_seqs); 
+        efficiency(stats, primes, exp_seqs);
+        Write(stats, primes, exp_seqs);
 
         replace_next(primes, record_tree); 
         /* ^ Result of the efficiency theorem ^ */
 
-        success(primes, record_tree);
-        Write(s, primes, exp_seqs);
+        success(primes, record_tree); /* Store in record tree for later ref*/
+        Write(stats, primes, exp_seqs);
         continue;
+      }  
+      
+      ZZ s = backup(primes, record_tree);
 
-      } else if (!cap_check(primes, record_forest, factors)){
-          running = fail(primes, record_tree);
+      if (primes.size() == factors - 1){ /* Follows from the continuity of OPANS theorem */
+        fail(primes, record_tree);
+      }
+
+      /* Find cap_d(P) */
+      ZZ cap_d = findmax(primes, factors, record_tree);
+
+      /* Check theorem concering capd(P) */
+      if (s <= cap_d) { 
+        primes.push_back(nextprime(s + 1));
+        continue;
+      } else {
+    /* Theorem tells us that we should modify the primes and cannot look here anymore */
+        fail(primes, record_tree);
       }
     }
-    Write(s, primes, exp_seqs);
+    Write(stats, primes, exp_seqs);
   }
   return;   
 }

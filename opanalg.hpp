@@ -72,7 +72,7 @@ struct Stats{
 };
 
 
-void efficiency(vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs, Stats& s);
+void efficiency(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs);
 void Reset(Stats& s);
 void Update(Stats& s, Tree& t);
 void Show(Stats& s, Tree& t);
