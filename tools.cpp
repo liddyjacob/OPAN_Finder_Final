@@ -95,7 +95,7 @@ RR b(vector<ZZ>& primes, vector<ZZ>& expos){
     std::cout << "In b with: ";
     printvect(primes);
     std::cout << "\nAnd exponents: ";
-    printvect(expos);
+    p   stream << '\n'irintvect(expos);
     std::cout << std::endl;
   #endif
 

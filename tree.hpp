@@ -59,13 +59,17 @@ vector<ZZ> strip_primes(Tree& t);
 
 void replace(Tree& t, ZZ rep);
 
-bool fail(Tree& t);
+bool fail(vector<ZZ>& primes, Tree& t);
 void display(Tree& t);
-ZZ backup(Tree& t);
-void success(Tree& t);
+ZZ backup(vector<ZZ>& primes, Tree& t);
+void success(vector<ZZ>& primes, Tree& t);
+
+ZZ find_s(vector<ZZ>& primes, Tree& t);
+void replace_next(vector<ZZ>& primes, Tree& t);
+
 
 ZZ max_branch(vector<ZZ>& primes,Tree& t);
 
 void set_max(Node* n, ZZ& p);
 
-ZZ findmax(vector<ZZ>& primes, vector<Tree>& trees);
+ZZ findmax(vector<ZZ>& primes, int factors, vector<Tree>& trees);

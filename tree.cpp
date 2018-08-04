@@ -55,8 +55,7 @@ vector<ZZ> strip_primes(Tree& t){
 void replace(Tree& t, ZZ rep){
   t.curr->p = rep;
 }
-
-bool fail(Tree& t){
+bool fail(vector<ZZ>& primes, Tree& t){
 
   while (!t.curr->success){
 
@@ -64,8 +63,10 @@ bool fail(Tree& t){
     t.curr = t.curr->parent;
     delete failed;
     t.curr->children.pop_back();
+    primes.pop_back();
 
     if (t.curr->p == ZZ(1) && (!t.curr->success))
+      
       return false;
   }
 
@@ -73,6 +74,7 @@ bool fail(Tree& t){
 
   while (t.curr->tried){
     t.curr = t.curr->parent;
+    primes.pop_back();
   }
   return true;
 }
@@ -100,7 +102,7 @@ void display(Tree& t){
   std::cout << '\n';
 }
 
-ZZ backup(Tree& t){
+ZZ backup(vector<ZZ>& primes, Tree& t){
 
   ZZ lastprime(-1);
   while (!t.curr->success){
@@ -111,15 +113,18 @@ ZZ backup(Tree& t){
     t.curr = t.curr->parent;
     delete failed;
     t.curr->children.pop_back();
+    primes.pop_back();
+
 
     if (t.curr->p == ZZ(1) && (!t.curr->success))
       return ZZ(1);
   }
 
+  //primes = strip_primes(t);
   return lastprime;
 }
 
-void success(Tree& t){
+void success(vector<ZZ>& primes, Tree& t){
   Node* node = t.curr;
   node = node->parent;
 
@@ -130,17 +135,19 @@ void success(Tree& t){
 
   while (node->p != ZZ(1)){
     node->success = true;
-    node = node->parent;
-    
+    node = node->parent; 
+
     // A shortcut:
     if (node->success == true) {break;}
+    //primes.pop_back(); 
   }
 
   t.curr = t.curr->parent;
+  primes = strip_primes(t);
 }
 
 
-ZZ findmax(vector<ZZ>& primes, vector<Tree>& Trees){
+ZZ findmax(vector<ZZ>& primes, int factors, vector<Tree>& Trees){
 
   int divisors = Trees.size() + 2;
   ZZ max(0);  
@@ -191,4 +198,12 @@ void set_max(Node* n, ZZ& p){
   }
   curr->max = p;
 }
+ZZ find_s(vector<ZZ>& primes, Tree& t){
+  grow(t, RR(3));
+  ZZ s = t.curr->p;
+  return s;
+}
+
+void replace_next(vector<ZZ>& primes, Tree& t){ return ;}
+
 

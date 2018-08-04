@@ -22,7 +22,10 @@ template<typename T>
 void printvectos(vector<T>& vect, std::ostream& stream){
   for (auto v : vect){
     stream << v << ", ";
-  } 
+ 
+  }
+  stream << '\n';
+
 }
 
 template<typename T>

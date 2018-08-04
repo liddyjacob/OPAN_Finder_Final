@@ -25,7 +25,7 @@ int main(int argc, char** argv){
 }
 
 bool
-parse(int& divisors,bool& verbose, string& fname, int argc, char** argv){
+parse(int& divisors, string& fname, int argc, char** argv){
 
   divisors = -1;
   fname = '-';

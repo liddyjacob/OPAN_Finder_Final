@@ -28,56 +28,67 @@ void OPAN(int d, string fname){
                                      (The prime sequence is kept track of by the tree) */  
 
     while (running){
+
       if (primes.size() != factors){
         if (b_1(primes) >= RR(2)){
           primes.pop_back();
           ZZ q = min_deficient(primes); /* find minimum prime so that Y(primes + r, {1,1,1,1...}) is deficient */
           primes.push_back(q);
         }
-        find_add_s(primes, record_tree);
+        ZZ s = find_s(primes, record_tree);
+        primes.push_back(s);
         continue;
       }
-
 
       if (b_inf(primes) <= RR(2)){
-        fail(primes, record_tree);
+        running = fail(primes, record_tree);
         continue;
       }
 
-
       if (exp_find(primes, exp_seqs)){
-
+        
+        /* Issues here */
+        
+        printvectos(primes, std::cout);
+        
         //Applying Efficiency Theorem...
         Write(stats, primes, exp_seqs); 
         efficiency(stats, primes, exp_seqs);
         Write(stats, primes, exp_seqs);
-
-        replace_next(primes, record_tree); 
+        
+        printvectos(primes, std::cout);
+        
+        //replace_next(primes, record_tree); 
         /* ^ Result of the efficiency theorem ^ */
-
         success(primes, record_tree); /* Store in record tree for later ref*/
-        Write(stats, primes, exp_seqs);
+        printvectos(primes, std::cout);
+
+        //Write(stats, primes, exp_seqs);
+
         continue;
-      }  
       
+        /* End issues section */
+      }
+      
+
       ZZ s = backup(primes, record_tree);
 
       if (primes.size() == factors - 1){ /* Follows from the continuity of OPANS theorem */
-        fail(primes, record_tree);
+        running = fail(primes, record_tree);
+        continue;
       }
 
       /* Find cap_d(P) */
-      ZZ cap_d = findmax(primes, factors, record_tree);
+      ZZ cap_d = findmax(primes, factors, record_forest);
 
       /* Check theorem concering capd(P) */
       if (s <= cap_d) { 
-        primes.push_back(nextprime(s + 1));
+        primes.push_back(NextPrime(s + 1));
         continue;
-      } else {
-    /* Theorem tells us that we should modify the primes and cannot look here anymore */
-        fail(primes, record_tree);
       }
-    }
+    /* Theorem tells us that we should modify the primes and cannot look here anymore */
+      running = fail(primes, record_tree);
+      }
     Write(stats, primes, exp_seqs);
   }
   return;   
@@ -111,31 +122,7 @@ bool exp_find(vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs){
   return (!exp_seqs.empty());
 }
 
-bool cap_check(vector<ZZ>& primes, vector<Tree>& forest, int& factors){
-
-  /* Run backup algorithm on tree, retrieve last truncated prime */
-  ZZ truncp = backup(forest.back());
-  primes = strip_primes(forest.back());
-
-  if (primes.size() == factors - 1){ /* Follows from the continuity of OPANS theorem */
-    return false;
-  }
-
-  /* Find cap_d(P) */
-  ZZ cap = findmax(primes, forest);
-
-  /* Check theorem concering capd(P) */
-  if (truncp <= cap) { 
-    grow(forest.back(), conv<RR>(truncp + 1));
-    return true;
-  } else {
-    /* Theorem tells us that we should modify the primes and cannot look here anymore */
-    return false;
-  }
-}
-
-
-void efficiency(vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs, Stats& s){
+void efficiency(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs){
   /* Assumes that input primes work with exp_seqs. */
   
   ZZ increment(2);
@@ -171,8 +158,6 @@ void efficiency(vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs, Stats& s){
       exp_seqs = last_exps;
     }      
   }
-
-
 
 }
 
@@ -214,13 +199,14 @@ void Write(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_sets){
 
   bool echange = false;
   vector<ZZ> core_primes = primes;
-  core_primes.pop_back();
+  std::cout << "Prime length in write: " << primes.size() << '\n';
+  
+  if (primes.size() != 0){ core_primes.pop_back(); }
 
   if (exp_sets != s.prev_exps){ 
     echange = true;
   } else if (core_primes != s.prev_core){
-    echange = true; /* Dump primes in form p1^e1 p2^e2 p3^e3 p4^e4 q^e5 for e's : and q's: */
-  
+    echange = true; /* Dump primes in form p1^e1 p2^e2 p3^e3 p4^e4 q^e5 for e's : and q's: */ 
   }
 
   
@@ -230,7 +216,6 @@ void Write(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_sets){
    * with old exponents */
 
   if (echange) {
-
     /* Just print one prime */
     if (s.prev_tail == s.init_tail){
       printwithprime(s.prev_core, s.prev_tail, s.out);
@@ -243,13 +228,15 @@ void Write(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_sets){
       s.out << '\n';
     }
 
-    s.init_tail = primes.back();
+    if (primes.size() != 0){s.init_tail = primes.back();}
+
     s.init_core = core_primes;
 
   }
-  s.prev_tail = primes.back();
+  if (primes.size() != 0){s.prev_tail = primes.back();}
   s.prev_core = core_primes;
   s.prev_exps = exp_sets;
   
 }
+
 
