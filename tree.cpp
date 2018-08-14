@@ -21,7 +21,7 @@ using NTL::conv;
 
 void grow(Tree& t, RR bound){
 
-  std::cout << "In grow\n";
+  //std::cout << "In grow\n";
 
   bound = max(bound, conv<RR>(t.curr->p + ZZ(1)));
 
@@ -152,10 +152,15 @@ ZZ findmax(vector<ZZ>& primes, int factors, vector<Tree>& Trees){
   int divisors = Trees.size() + 2;
   ZZ max(0);  
 
-  for (int d = divisors; d > primes.size(); d--){
+  std::cerr << "Finding max\n";
+  
+  for (int d = factors; d > 3; d--){
     Tree& t = Trees[d - 3]; // 
     max = std::max(max_branch(primes, t), max);
+    std::cerr << "Max: " << max << '\n';
   }
+
+  std::cerr << "Max: " << max  <<" \n";
 
   return max;
 }
@@ -198,6 +203,7 @@ void set_max(Node* n, ZZ& p){
   }
   curr->max = p;
 }
+
 ZZ find_s(vector<ZZ>& primes, Tree& t){
   grow(t, RR(3));
   ZZ s = t.curr->p;

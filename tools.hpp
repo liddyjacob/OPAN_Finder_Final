@@ -60,3 +60,4 @@ ZZ product(vector<ZZ>& primes, vector<ZZ>& exps);
 ZZ abundance(vector<ZZ>& primes, vector<ZZ>& exps);
 vector<ZZ> div_below_a(vector<ZZ>& primes, vector<ZZ>& exps);
 
+

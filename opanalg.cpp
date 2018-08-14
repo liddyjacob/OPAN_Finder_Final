@@ -48,21 +48,15 @@ void OPAN(int d, string fname){
       if (exp_find(primes, exp_seqs)){
         
         /* Issues here */
-        
-        printvectos(primes, std::cout);
-        
+       
         //Applying Efficiency Theorem...
         Write(stats, primes, exp_seqs); 
         efficiency(stats, primes, exp_seqs);
         Write(stats, primes, exp_seqs);
-        
-        printvectos(primes, std::cout);
-        
-        //replace_next(primes, record_tree); 
+       
+        replace(record_tree, primes.back()); 
         /* ^ Result of the efficiency theorem ^ */
         success(primes, record_tree); /* Store in record tree for later ref*/
-        printvectos(primes, std::cout);
-
         //Write(stats, primes, exp_seqs);
 
         continue;
@@ -89,6 +83,11 @@ void OPAN(int d, string fname){
     /* Theorem tells us that we should modify the primes and cannot look here anymore */
       running = fail(primes, record_tree);
       }
+    
+    /* Issues in set_max of tree.cpp. Need to Properly find the cap */
+    std::cerr << "> Number found with " << factors << " prime factors: " 
+              << stats.number_found << '\n';
+    stats.number_found = 0;
     Write(stats, primes, exp_seqs);
   }
   return;   
@@ -122,9 +121,20 @@ bool exp_find(vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs){
   return (!exp_seqs.empty());
 }
 
+ZZ countprimes(ZZ p1, ZZ p2){
+
+  int64_t number = primecount::pi(conv<int64_t>(p2))
+                 - primecount::pi(conv<int64_t>(p1));
+  return conv<ZZ>(number);
+}
+
+
+
 void efficiency(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs){
   /* Assumes that input primes work with exp_seqs. */
   
+  ZZ prime_init = primes.back();
+
   ZZ increment(2);
   ZZ bad(0);
   bool comedown = false;
@@ -158,6 +168,10 @@ void efficiency(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs){
       exp_seqs = last_exps;
     }      
   }
+
+  ZZ prime_final = primes.back();
+
+  s.number_found += countprimes(prime_init - ZZ(1), prime_final + ZZ(1)) * exp_seqs.size();
 
 }
 
@@ -199,7 +213,7 @@ void Write(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_sets){
 
   bool echange = false;
   vector<ZZ> core_primes = primes;
-  std::cout << "Prime length in write: " << primes.size() << '\n';
+  //std::cout << "Prime length in write: " << primes.size() << '\n';
   
   if (primes.size() != 0){ core_primes.pop_back(); }
 
