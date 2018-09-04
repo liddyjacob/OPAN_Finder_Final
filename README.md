@@ -3,17 +3,17 @@
 This program finds all odd primitive abundant numbers with d distict prime factors.
 This project is an implementation of: <http://ideaexchange.uakron.edu/honors_research_projects/728/>
 
-We are in early stages of development, check back in a few weeks
-and this will be more functional. If you would like to run this
-program anyway, then keep reading.
-
-Here are the things you will need:
+If you would like to run this
+program, you will need the following:
 
 * [NTL 11.0.0](http://www.shoup.net/ntl/)
 * [GMP(for NTL)](https://gmplib.org/)
 * [primecount](https://github.com/kimwalisch/primecount)
+* C++11
+* cmake
 
-To run, use the following commands:
+To build and run the algorithm, open your terminal in 
+this directory and use the following commands:
 
 ```bash
 mkdir build
