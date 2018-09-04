@@ -26,7 +26,6 @@ void OPAN(int d, string fname){
  
     vector<vector<ZZ> > exp_seqs; /* Exponent sequences for the prime sequence
                                      (The prime sequence is kept track of by the tree) */  
-
     while (running){
 
       if (primes.size() != factors){
@@ -35,6 +34,7 @@ void OPAN(int d, string fname){
           ZZ q = min_deficient(primes); /* find minimum prime so that Y(primes + r, {1,1,1,1...}) is deficient */
           primes.push_back(q);
         }
+        
         ZZ s = find_s(primes, record_tree);
         primes.push_back(s);
         continue;
@@ -64,8 +64,8 @@ void OPAN(int d, string fname){
         /* End issues section */
       }
       
-
       ZZ s = backup(primes, record_tree);
+      primes = strip_primes(record_tree);
 
       if (primes.size() == factors - 1){ /* Follows from the continuity of OPANS theorem */
         running = fail(primes, record_tree);
@@ -74,21 +74,24 @@ void OPAN(int d, string fname){
 
       /* Find cap_d(P) */
       ZZ cap_d = findmax(primes, factors, record_forest);
-
+      
       /* Check theorem concering capd(P) */
-      if (s <= cap_d) { 
-        primes.push_back(NextPrime(s + 1));
+      if (s <= cap_d) {
+        grow(record_tree, conv<RR>(s) + RR(.5));        
+        primes.push_back(NextPrime(s + ZZ(1)));
         continue;
       }
+
     /* Theorem tells us that we should modify the primes and cannot look here anymore */
       running = fail(primes, record_tree);
       }
     
     /* Issues in set_max of tree.cpp. Need to Properly find the cap */
+    Write(stats, primes, exp_seqs);
     std::cerr << "> Number found with " << factors << " prime factors: " 
               << stats.number_found << '\n';
-    stats.number_found = 0;
-    Write(stats, primes, exp_seqs);
+    //stats.number_found = 0;
+    Reset(stats);   
   }
   return;   
 }
@@ -213,8 +216,7 @@ void Write(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_sets){
 
   bool echange = false;
   vector<ZZ> core_primes = primes;
-  //std::cout << "Prime length in write: " << primes.size() << '\n';
-  
+  //std::cout << "Prime length in write: " << primes.size() << '\n'; 
   if (primes.size() != 0){ core_primes.pop_back(); }
 
   if (exp_sets != s.prev_exps){ 
@@ -247,6 +249,7 @@ void Write(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_sets){
     s.init_core = core_primes;
 
   }
+
   if (primes.size() != 0){s.prev_tail = primes.back();}
   s.prev_core = core_primes;
   s.prev_exps = exp_sets;

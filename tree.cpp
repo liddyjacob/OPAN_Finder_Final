@@ -1,6 +1,7 @@
 //Tree.hpp
 
 #include "tree.hpp"
+#include "tools.hpp"
 
 #include <string>
 #include <vector>
@@ -24,19 +25,14 @@ void grow(Tree& t, RR bound){
   //std::cout << "In grow\n";
 
   bound = max(bound, conv<RR>(t.curr->p + ZZ(1)));
-
   // If there are any children: Need to worry about them.
   if (!t.curr->children.empty()){
-
     RR maxchild = conv<RR>(t.curr->children.back()->p);
     bound = max(maxchild + RR(1), bound);
-
   }
 
   ZZ nextprime = NextPrime(NTL::CeilToZZ(bound));
-
   Node* extend = new Node(nextprime, t.curr);
-  
   t.curr = extend;
 }
 
@@ -105,6 +101,7 @@ void display(Tree& t){
 ZZ backup(vector<ZZ>& primes, Tree& t){
 
   ZZ lastprime(-1);
+
   while (!t.curr->success){
 
     lastprime = t.curr->p;
@@ -115,10 +112,12 @@ ZZ backup(vector<ZZ>& primes, Tree& t){
     t.curr->children.pop_back();
     primes.pop_back();
 
-
     if (t.curr->p == ZZ(1) && (!t.curr->success))
       return ZZ(1);
   }
+
+//    t.curr->tried = true;
+ 
 
   //primes = strip_primes(t);
   return lastprime;
@@ -152,22 +151,18 @@ ZZ findmax(vector<ZZ>& primes, int factors, vector<Tree>& Trees){
   int divisors = Trees.size() + 2;
   ZZ max(0);  
 
-  std::cerr << "Finding max\n";
-  
-  for (int d = factors; d > 3; d--){
-    Tree& t = Trees[d - 3]; // 
+  for (int d = factors - 1; d > primes.size(); d--){
+    Tree& t = Trees[d - 3]; 
     max = std::max(max_branch(primes, t), max);
-    std::cerr << "Max: " << max << '\n';
-  }
-
-  std::cerr << "Max: " << max  <<" \n";
-
+  } 
+  
   return max;
 }
 
 ZZ max_helper(Node* n, vector<ZZ>& primes, int i = 0){
+  
   if (i == primes.size()){
-    return n->max;
+    return n->children.back()->p;
   }
 
   for(int j = 0; j < n->children.size(); ++j){
