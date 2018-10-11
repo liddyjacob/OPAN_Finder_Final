@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
+project(Weirds)
 set(CMAKE_CXX_FLAGS "-std=c++11 -g -lntl  -lgmp -fopenmp -lprimecount")
 
-project(Weirds)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(HEADER_FILES opnalg.hpp)

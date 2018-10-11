@@ -10,10 +10,11 @@
 #include <algorithm>
 
 
-void OPAN(int d, string fname){
+void OPAN(int d, string fname, bool count){
 
   std::vector<Tree> record_forest;
   Stats stats(fname);
+  stats.count = count;
 
   for (int factors = 3; factors <= d; ++factors){
     
@@ -174,8 +175,9 @@ void efficiency(Stats& s, vector<ZZ>& primes, vector<vector<ZZ> >& exp_seqs){
 
   ZZ prime_final = primes.back();
 
-  s.number_found += countprimes(prime_init - ZZ(1), prime_final + ZZ(1)) * exp_seqs.size();
-
+  if (s.count){
+    s.number_found += countprimes(prime_init - ZZ(1), prime_final + ZZ(1)) * exp_seqs.size();
+  }   
 }
 
 

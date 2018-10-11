@@ -1,7 +1,5 @@
-
 #include <iostream>
 #include <string>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,15 +7,16 @@
 #include "opanalg.hpp"
 using std::string;
 
-bool parse(int& divisors, string& fname, int argc, char** argv);
-
+bool parse(int& divisors, string& fname, bool& count, int argc, char** argv);
 
 int main(int argc, char** argv){
+
   int divisors; 
   string fname;
+  bool count;
 
-  if (parse(divisors, fname, argc, argv)){
-    OPAN(divisors,fname);
+  if (parse(divisors, fname, count, argc, argv)){
+    OPAN(divisors,fname, count);
     return 0;
   }
 
@@ -25,10 +24,11 @@ int main(int argc, char** argv){
 }
 
 bool
-parse(int& divisors, string& fname, int argc, char** argv){
+parse(int& divisors, string& fname, bool& count, int argc, char** argv){
 
   divisors = -1;
   fname = '-';
+  count = true;
 
   if (argc == 1){ 
     std::cerr << "For options, type -help\n";
@@ -38,8 +38,10 @@ parse(int& divisors, string& fname, int argc, char** argv){
     if (strcmp(argv[i], "-help") == 0 ){
       std::cout << "Options:\n\n"
                 << "\t-n <Number of Divisors>: Specify number of divisors\n"
-                << "\t-f <filename> : Save all integers found to filename\n";
+                << "\t-f <filename> : Save all integers found to filename\n"
+                << "\t-nc: Do not count number, just record(nc = no count)\n";
       return false;
+  
     } else 
     if (strcmp(argv[i], "-n") == 0){
       ++i;
@@ -57,7 +59,12 @@ parse(int& divisors, string& fname, int argc, char** argv){
       }
       fname = string(argv[i]);
 
-    } else {
+    } else
+    if (strcmp(argv[i], "-nc") == 0){
+        count = false;        
+    }
+    
+    else {
       std::cerr << argv[i] << ": Invalid Argument\n";
       return false;
     }

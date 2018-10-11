@@ -62,6 +62,7 @@ struct Stats{
   ZZ freq;
   ZZ product;
 
+  bool count;
   std::ostream out;
 
   vector<ZZ> prev_core;
@@ -88,7 +89,7 @@ bool cap_check(vector<ZZ>& primes,
 bool exp_find(vector<ZZ>& primes, 
               vector<vector<ZZ> >& exp_seqs);
 
-void OPAN(int d, string fname);
+void OPAN(int d, string fname, bool count);
 void printline(int line);
 
 
