@@ -24,3 +24,6 @@ cmake ../
 make
 ./run -help
 ```
+
+TODO LIST:
+* Build script in Python.
